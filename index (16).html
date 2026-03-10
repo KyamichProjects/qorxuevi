@@ -1,0 +1,1734 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panika — Qorxu Evi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Rajdhani:wght@300;400;500;600;700&family=Black+Han+Sans&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --blood: #cc1a0a;
+            --blood-dark: #7b1a12;
+            --blood-glow: #ff2a15;
+            --ember: #e67e22;
+            --ash: #2c2c2c;
+            --bone: #d4c5a9;
+            --void: #050505;
+            --smoke: #1a1a1a;
+            --mist: rgba(192,57,43,0.08);
+        }
+
+        /* ── BLOOD DRIPS DECORATION ── */
+        .blood-drip-bar {
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+            margin: 0;
+            padding: 0;
+            display: block;
+        }
+        .blood-drip-bar svg {
+            display: block;
+            width: 100%;
+        }
+        @keyframes drip-grow {
+            0% { transform: scaleY(0); transform-origin: top; opacity: 0; }
+            30% { opacity: 1; }
+            100% { transform: scaleY(1); transform-origin: top; opacity: 1; }
+        }
+        .drip-path { animation: drip-grow 2s ease-out forwards; }
+        .drip-path:nth-child(2) { animation-delay: 0.2s; }
+        .drip-path:nth-child(3) { animation-delay: 0.5s; }
+        .drip-path:nth-child(4) { animation-delay: 0.1s; }
+        .drip-path:nth-child(5) { animation-delay: 0.7s; }
+        .drip-path:nth-child(6) { animation-delay: 0.3s; }
+        .drip-path:nth-child(7) { animation-delay: 0.9s; }
+        .drip-path:nth-child(8) { animation-delay: 0.15s; }
+
+        /* ── BLOOD SPLATTER ── */
+        .splat {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(180, 20, 5, 0.18);
+            pointer-events: none;
+            filter: blur(1px);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--void);
+            color: #ccc;
+            overflow-x: hidden;
+            cursor: default;
+        }
+
+        /* ── NOISE OVERLAY ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.6;
+        }
+
+        /* ── SCROLLBAR ── */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: var(--void); }
+        ::-webkit-scrollbar-thumb { background: var(--blood-dark); border-radius: 2px; }
+
+        /* ── LANGUAGE SWITCHER ── */
+        .lang-bar {
+            background: #0d0d0d;
+            border-bottom: 1px solid rgba(192,57,43,0.2);
+            padding: 6px 0;
+        }
+        .lang-bar .inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 8px;
+        }
+        .lang-btn {
+            background: transparent;
+            border: 1px solid rgba(192,57,43,0.3);
+            color: #888;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            padding: 4px 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+        .lang-btn:hover, .lang-btn.active {
+            background: var(--blood);
+            border-color: var(--blood);
+            color: #fff;
+        }
+
+        /* ── HEADER ── */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10,10,10,0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(192,57,43,0.15);
+        }
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+        .logo img {
+            height: 68px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(204,26,10,0.6));
+        }
+        .logo-text {
+            font-family: 'Cinzel Decorative', 'Cinzel', serif;
+            font-size: 17px;
+            font-weight: 900;
+            color: #fff;
+            letter-spacing: 1px;
+            line-height: 1.2;
+            text-shadow: 0 0 20px rgba(204,26,10,0.4);
+        }
+        .logo-text span { color: var(--blood); }
+
+        nav { display: flex; align-items: center; gap: 40px; }
+        nav a {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            color: #888;
+            text-decoration: none;
+            text-transform: uppercase;
+            position: relative;
+            transition: color 0.3s;
+        }
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--blood);
+            transition: width 0.3s;
+        }
+        nav a:hover { color: #fff; }
+        nav a:hover::after, nav a.active::after { width: 100%; }
+        nav a.active { color: #fff; }
+
+        .nav-cta {
+            background: var(--blood);
+            color: #fff !important;
+            padding: 10px 24px;
+            font-size: 12px !important;
+            letter-spacing: 2px !important;
+            transition: background 0.3s !important;
+        }
+        .nav-cta::after { display: none !important; }
+        .nav-cta:hover { background: var(--blood-dark) !important; }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 4px;
+        }
+        .hamburger span {
+            width: 24px;
+            height: 2px;
+            background: #fff;
+            transition: all 0.3s;
+        }
+
+        /* ── MOBILE NAV ── */
+        .mobile-nav {
+            display: none;
+            flex-direction: column;
+            gap: 0;
+            background: #0d0d0d;
+            border-top: 1px solid rgba(192,57,43,0.2);
+            padding: 16px 24px;
+        }
+        .mobile-nav a {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            color: #888;
+            text-decoration: none;
+            text-transform: uppercase;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            transition: color 0.3s;
+        }
+        .mobile-nav a:hover { color: var(--blood); }
+        .mobile-nav.open { display: flex; }
+
+        /* ── HERO ── */
+        .hero {
+            min-height: 92vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(ellipse 60% 50% at 20% 50%, rgba(120,0,0,0.25) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 60% at 80% 30%, rgba(80,0,0,0.2) 0%, transparent 60%),
+                linear-gradient(160deg, #0a0a0a 0%, #110000 50%, #0a0a0a 100%);
+        }
+        /* Drip lines */
+        .drip {
+            position: absolute;
+            top: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, transparent, rgba(192,57,43,0.6), transparent);
+            animation: drip-fall linear infinite;
+        }
+        @keyframes drip-fall {
+            0% { height: 0; top: -100px; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { height: 300px; top: 100%; opacity: 0; }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(192,57,43,0.1);
+            border: 1px solid rgba(192,57,43,0.3);
+            color: var(--blood-glow);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            padding: 6px 16px;
+            margin-bottom: 28px;
+        }
+        .hero-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--blood);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.7); }
+        }
+        .hero h1 {
+            font-family: 'Cinzel Decorative', 'Cinzel', serif;
+            font-size: clamp(52px, 7vw, 100px);
+            font-weight: 900;
+            line-height: 0.95;
+            color: #fff;
+            margin-bottom: 8px;
+            -webkit-text-stroke: 1px rgba(204,26,10,0.3);
+            letter-spacing: -1px;
+        }
+        .hero h1 .red {
+            color: var(--blood);
+            text-shadow: 0 0 60px rgba(204,26,10,0.7), 0 0 120px rgba(204,26,10,0.3);
+            -webkit-text-stroke: 1px rgba(255,80,60,0.2);
+        }
+        .hero-sub {
+            font-family: 'Crimson Text', serif;
+            font-size: 22px;
+            font-style: italic;
+            color: #888;
+            margin-bottom: 32px;
+            line-height: 1.5;
+        }
+        .hero-sub em { color: var(--bone); font-style: normal; }
+        .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--blood);
+            color: #fff;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 16px 32px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0.1);
+            transform: translateX(-100%);
+            transition: transform 0.3s;
+        }
+        .btn-primary:hover::before { transform: translateX(0); }
+        .btn-primary:hover { box-shadow: 0 0 30px rgba(192,57,43,0.5); }
+        .btn-outline {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: transparent;
+            color: #ccc;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 15px 32px;
+            text-decoration: none;
+            border: 1px solid rgba(255,255,255,0.2);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-outline:hover {
+            border-color: var(--blood);
+            color: #fff;
+        }
+
+        /* ── HERO VISUAL — BLOOD CANDLE ── */
+        .hero-visual {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .blood-scene {
+            position: relative;
+            width: 320px;
+            height: 380px;
+        }
+        /* big drip column */
+        .bs-drip {
+            position: absolute;
+            top: 0;
+            border-radius: 0 0 50% 50%;
+            background: linear-gradient(to bottom, #cc1a0a, #8b0000);
+            animation: drip-drop 3s ease-in-out infinite;
+        }
+        @keyframes drip-drop {
+            0%,100% { transform: scaleY(1); }
+            50%      { transform: scaleY(1.04); }
+        }
+        .bs-drip-1 { left: 48px;  width: 18px; height: 220px; animation-delay: 0s;    opacity:.9; }
+        .bs-drip-2 { left: 90px;  width: 14px; height: 160px; animation-delay: .4s;   opacity:.75; }
+        .bs-drip-3 { left: 130px; width: 22px; height: 280px; animation-delay: .2s;   opacity:1; }
+        .bs-drip-4 { left: 172px; width: 12px; height: 140px; animation-delay: .6s;   opacity:.7; }
+        .bs-drip-5 { left: 208px; width: 16px; height: 200px; animation-delay: .1s;   opacity:.85; }
+        .bs-drip-6 { left: 256px; width: 10px; height: 110px; animation-delay: .8s;   opacity:.6; }
+        /* round drops at bottom */
+        .bs-drop {
+            position: absolute;
+            background: radial-gradient(circle at 40% 35%, #ff3322, #8b0000);
+            border-radius: 50% 50% 60% 60%;
+            box-shadow: 0 0 16px rgba(204,26,10,0.5);
+            animation: drop-pulse 2.5s ease-in-out infinite;
+        }
+        @keyframes drop-pulse {
+            0%,100% { transform: scale(1); opacity:1; }
+            50%      { transform: scale(1.08); opacity:.8; }
+        }
+        .bs-drop-1 { left: 40px;  bottom: 60px;  width: 32px; height: 36px; animation-delay:0s; }
+        .bs-drop-2 { left: 83px;  bottom: 40px;  width: 22px; height: 26px; animation-delay:.3s; }
+        .bs-drop-3 { left: 122px; bottom: 80px;  width: 40px; height: 45px; animation-delay:.1s; }
+        .bs-drop-4 { left: 165px; bottom: 35px;  width: 20px; height: 23px; animation-delay:.5s; }
+        .bs-drop-5 { left: 200px; bottom: 55px;  width: 28px; height: 32px; animation-delay:.2s; }
+        .bs-drop-6 { left: 250px; bottom: 25px;  width: 16px; height: 18px; animation-delay:.7s; }
+        /* glow pool at bottom */
+        .bs-pool {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 60px;
+            background: radial-gradient(ellipse 80% 100% at 50% 80%, rgba(180,10,0,0.5), transparent);
+            border-radius: 50%;
+            filter: blur(8px);
+            animation: pool-breathe 3s ease-in-out infinite;
+        }
+        @keyframes pool-breathe {
+            0%,100% { opacity:.6; transform: translateX(-50%) scaleX(1); }
+            50%      { opacity:1;  transform: translateX(-50%) scaleX(1.06); }
+        }
+        /* flame sparks */
+        .bs-spark {
+            position: absolute;
+            top: -10px;
+            width: 4px;
+            height: 4px;
+            background: #ff6600;
+            border-radius: 50%;
+            animation: spark-fly linear infinite;
+        }
+        @keyframes spark-fly {
+            0%   { opacity:0; transform: translateY(0) scale(1); }
+            20%  { opacity:1; }
+            100% { opacity:0; transform: translateY(-60px) scale(0.2) translateX(var(--sx,0px)); }
+        }
+        .bs-spark-1 { left: 58px;  animation-duration:1.6s; animation-delay:0s;   --sx: -12px; }
+        .bs-spark-2 { left: 140px; animation-duration:2.0s; animation-delay:.4s;  --sx:  8px;  width:6px; height:6px; background:#ff4400; }
+        .bs-spark-3 { left: 220px; animation-duration:1.4s; animation-delay:.8s;  --sx: -6px;  }
+        .bs-spark-4 { left: 100px; animation-duration:1.8s; animation-delay:1.2s; --sx:  14px; background:#ffaa00; }
+        .bs-spark-5 { left: 175px; animation-duration:1.5s; animation-delay:.6s;  --sx: -10px; width:3px; height:3px; }
+
+        /* ── PRICE BANNER ── */
+        .price-section {
+            padding: 80px 0;
+            background: linear-gradient(to bottom, #0a0a0a, #0f0000, #0a0a0a);
+        }
+        .price-section .inner {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        .section-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--blood);
+            margin-bottom: 12px;
+            text-shadow: 0 0 12px rgba(204,26,10,0.6);
+        }
+        .section-title {
+            font-family: 'Cinzel Decorative', 'Cinzel', serif;
+            font-size: clamp(24px, 3.5vw, 44px);
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 48px;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.8);
+        }
+
+        .price-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2px;
+            border: 1px solid rgba(192,57,43,0.2);
+            margin-bottom: 40px;
+        }
+        .price-card {
+            background: rgba(15,0,0,0.8);
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+            transition: background 0.3s;
+        }
+        .price-card:hover { background: rgba(30,5,5,0.9); }
+        .price-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--blood), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .price-card:hover::before { opacity: 1; }
+        .price-day {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .price-day span { color: var(--ember); }
+        .price-old {
+            font-size: 14px;
+            color: #444;
+            text-decoration: line-through;
+            margin-bottom: 4px;
+        }
+        .price-currency {
+            font-size: 18px;
+            color: #666;
+            margin-top: 4px;
+        }
+        .price-save {
+            display: inline-block;
+            background: rgba(192,57,43,0.15);
+            border: 1px solid rgba(192,57,43,0.3);
+            color: var(--blood-glow);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            margin-top: 16px;
+        }
+
+        .hours-bar {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px 24px;
+            background: rgba(192,57,43,0.05);
+            border: 1px solid rgba(192,57,43,0.15);
+        }
+        .hours-icon { color: var(--blood); font-size: 20px; }
+        .hours-label {
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #555;
+        }
+        .hours-value {
+            font-family: 'Cinzel', serif;
+            font-size: 18px;
+            color: #fff;
+            margin-left: auto;
+        }
+
+        /* ── SERVICES ── */
+        .services-section {
+            padding: 100px 0;
+            background: var(--void);
+        }
+        .services-section .inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        .services-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2px;
+            margin-top: 60px;
+        }
+        .service-card {
+            background: rgba(12,5,5,0.9);
+            border: 1px solid rgba(192,57,43,0.1);
+            padding: 48px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s;
+        }
+        .service-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--blood), transparent);
+            transform: scaleX(0);
+            transition: transform 0.4s;
+        }
+        .service-card:hover::after { transform: scaleX(1); }
+        .service-card:hover {
+            background: rgba(20,5,5,0.95);
+            border-color: rgba(192,57,43,0.3);
+        }
+        .service-number {
+            font-family: 'Cinzel', serif;
+            font-size: 72px;
+            font-weight: 900;
+            color: rgba(192,57,43,0.06);
+            line-height: 1;
+            margin-bottom: -20px;
+        }
+        .service-icon-wrap {
+            width: 56px;
+            height: 56px;
+            border: 1px solid rgba(192,57,43,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            color: var(--blood);
+        }
+        .service-icon-wrap svg { width: 26px; height: 26px; }
+        .service-title {
+            font-family: 'Cinzel Decorative', 'Cinzel', serif;
+            font-size: 20px;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+        .service-sub {
+            font-family: 'Crimson Text', serif;
+            font-size: 16px;
+            font-style: italic;
+            color: #555;
+            margin-bottom: 24px;
+        }
+        .service-features {
+            list-style: none;
+            margin-bottom: 36px;
+        }
+        .service-features li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            font-size: 14px;
+            color: #888;
+            letter-spacing: 0.5px;
+        }
+        .service-features li::before {
+            content: '';
+            width: 4px;
+            height: 4px;
+            background: var(--blood);
+            flex-shrink: 0;
+        }
+        .service-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .service-link {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #555;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .service-link:hover { color: var(--blood); }
+
+        /* ── MODES ── */
+        .modes-section {
+            padding: 100px 0;
+            background: linear-gradient(to bottom, #0a0a0a, #080000);
+        }
+        .modes-section .inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        .modes-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2px;
+            margin-top: 60px;
+        }
+        .mode-card {
+            background: rgba(12,5,5,0.8);
+            border: 1px solid rgba(255,255,255,0.04);
+            padding: 32px 24px;
+            text-align: center;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .mode-card:hover {
+            background: rgba(20,5,5,0.95);
+            border-color: var(--mode-color, var(--blood));
+        }
+        .mode-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--mode-color, var(--blood));
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            box-shadow: 0 0 12px var(--mode-color, var(--blood));
+        }
+        .mode-name {
+            font-family: 'Cinzel Decorative', 'Cinzel', serif;
+            font-size: 14px;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+        .mode-age {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--mode-color, var(--blood));
+            margin-bottom: 12px;
+        }
+        .mode-desc {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        /* ── WHY ── */
+        .why-section {
+            padding: 100px 0;
+            background: var(--void);
+        }
+        .why-section .inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        .why-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 48px;
+            margin-top: 60px;
+        }
+        .why-card { text-align: center; }
+        .why-num {
+            font-family: 'Cinzel', serif;
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: var(--blood);
+            margin-bottom: 20px;
+        }
+        .why-icon {
+            width: 52px;
+            height: 52px;
+            margin: 0 auto 20px;
+            color: var(--blood);
+            opacity: 0.8;
+        }
+        .why-title {
+            font-family: 'Cinzel Decorative', 'Cinzel', serif;
+            font-size: 14px;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+        .why-text {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.7;
+        }
+        /* ── BLOOD PRICE ── */
+        .price-new {
+            font-family: 'Cinzel Decorative', 'Cinzel', serif;
+            font-size: 60px;
+            font-weight: 900;
+            color: #fff;
+            line-height: 1;
+            text-shadow: 0 0 30px rgba(204,26,10,0.3);
+        }
+        .price-new sup {
+            font-family: 'Cinzel', serif;
+            font-size: 18px;
+            vertical-align: top;
+            margin-top: 12px;
+            display: inline-block;
+            color: #888;
+        }
+
+        /* ── MAP / ADDRESS ── */
+        .location-section {
+            padding: 80px 0;
+            background: linear-gradient(to bottom, #080000, #0a0a0a);
+        }
+        .location-section .inner {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        .location-card {
+            border: 1px solid rgba(192,57,43,0.2);
+            padding: 48px;
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            background: rgba(12,5,5,0.8);
+        }
+        .location-pin {
+            width: 64px;
+            height: 64px;
+            border: 1px solid rgba(192,57,43,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--blood);
+            flex-shrink: 0;
+        }
+        .location-pin svg { width: 28px; height: 28px; }
+        .location-text { flex: 1; }
+        .location-title {
+            font-family: 'Cinzel', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+        .location-addr {
+            font-size: 15px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            background: #060606;
+            border-top: 1px solid rgba(192,57,43,0.1);
+            padding: 60px 0 32px;
+        }
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 64px;
+            margin-bottom: 48px;
+        }
+        .footer-brand { }
+        .footer-logo {
+            font-family: 'Cinzel Decorative', 'Cinzel', serif;
+            font-size: 18px;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 16px;
+        }
+        .footer-logo span { color: var(--blood); }
+        .footer-desc {
+            font-size: 14px;
+            color: #444;
+            line-height: 1.8;
+            max-width: 280px;
+        }
+        .footer-heading {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--blood);
+            margin-bottom: 24px;
+        }
+        .footer-links { list-style: none; }
+        .footer-links li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            font-size: 14px;
+            color: #444;
+            transition: color 0.3s;
+        }
+        .footer-links li:hover { color: #ccc; }
+        .footer-contact { list-style: none; }
+        .footer-contact li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+            font-size: 14px;
+            color: #444;
+        }
+        .footer-contact li svg { width: 16px; height: 16px; color: var(--blood); flex-shrink: 0; }
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .footer-copy { font-size: 12px; color: #333; letter-spacing: 1px; }
+
+        /* ── MODAL ── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .modal {
+            background: #0d0d0d;
+            border: 1px solid rgba(192,57,43,0.2);
+            padding: 48px;
+            width: 100%;
+            max-width: 480px;
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.3s;
+        }
+        .modal-overlay.open .modal { transform: translateY(0); }
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #555;
+            cursor: pointer;
+            transition: color 0.3s;
+            font-size: 24px;
+            line-height: 1;
+        }
+        .modal-close:hover { color: #fff; }
+        .modal-title {
+            font-family: 'Cinzel', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+        .modal-sub {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 32px;
+        }
+        .form-group { margin-bottom: 20px; }
+        .form-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #555;
+            margin-bottom: 8px;
+        }
+        .form-input, .form-select {
+            width: 100%;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: #fff;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 15px;
+            padding: 12px 16px;
+            outline: none;
+            transition: border-color 0.3s;
+            appearance: none;
+        }
+        .form-input:focus, .form-select:focus {
+            border-color: rgba(192,57,43,0.5);
+        }
+        .form-input::placeholder { color: #333; }
+        .form-select option { background: #1a1a1a; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .btn-whatsapp {
+            width: 100%;
+            background: #25D366;
+            color: #fff;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 16px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: background 0.3s;
+            margin-top: 8px;
+        }
+        .btn-whatsapp:hover { background: #1ea855; }
+        .btn-whatsapp svg { width: 20px; height: 20px; }
+
+        /* ── RESPONSIVE ── */
+
+        /* Tablet landscape ~1100px */
+        @media (max-width: 1100px) {
+            .hero-content { gap: 48px; }
+            .hero h1 { font-size: clamp(44px, 6vw, 72px); }
+            .blood-scene { width: 260px; height: 300px; }
+            .bs-drip-1 { left: 30px;  height: 180px; }
+            .bs-drip-2 { left: 68px;  height: 130px; }
+            .bs-drip-3 { left: 103px; height: 230px; }
+            .bs-drip-4 { left: 138px; height: 115px; }
+            .bs-drip-5 { left: 168px; height: 165px; }
+            .bs-drip-6 { left: 210px; height: 90px; }
+            .why-grid { grid-template-columns: repeat(2, 1fr); gap: 40px; }
+        }
+
+        /* Tablet ~900px */
+        @media (max-width: 900px) {
+            .header-inner { padding: 0 20px; }
+            nav { display: none; }
+            .hamburger { display: flex; }
+
+            .hero { min-height: auto; padding: 60px 0 80px; }
+            .hero-content {
+                grid-template-columns: 1fr;
+                gap: 56px;
+                text-align: center;
+            }
+            .hero-actions { justify-content: center; }
+            .hero-badge { display: inline-flex; }
+            .hero-visual { order: -1; }
+            .blood-scene { width: 280px; height: 240px; margin: 0 auto; }
+            .bs-drip-1 { left: 20px;  height: 140px; }
+            .bs-drip-2 { left: 56px;  height: 105px; }
+            .bs-drip-3 { left: 90px;  height: 170px; }
+            .bs-drip-4 { left: 124px; height: 90px; }
+            .bs-drip-5 { left: 155px; height: 130px; }
+            .bs-drip-6 { left: 200px; height: 75px; }
+            .bs-drop-1 { left: 10px; }
+            .bs-drop-5 { left: 145px; }
+            .bs-drop-6 { left: 192px; }
+            .bs-pool { width: 260px; }
+
+            .services-grid { grid-template-columns: 1fr; }
+            .service-card { padding: 36px 28px; }
+
+            .modes-grid { grid-template-columns: 1fr 1fr; }
+
+            .why-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+
+            .price-grid { grid-template-columns: 1fr; }
+            .price-card { padding: 32px; }
+
+            .location-card { flex-direction: column; text-align: center; gap: 24px; }
+
+            .footer-grid { grid-template-columns: 1fr; gap: 40px; }
+            .footer-brand .footer-desc { max-width: 100%; }
+            .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+
+            .section-title { font-size: clamp(22px, 5vw, 36px); }
+        }
+
+        /* Mobile ~600px */
+        @media (max-width: 600px) {
+            .lang-bar .inner { justify-content: center; }
+
+            .logo-text { font-size: 13px; }
+            .logo img { height: 52px; }
+
+            .hero { padding: 40px 0 60px; }
+            .hero-content { padding: 0 16px; gap: 40px; }
+            .hero h1 { font-size: clamp(38px, 11vw, 56px); }
+            .hero-sub { font-size: 18px; }
+            .hero-actions { flex-direction: column; align-items: center; gap: 12px; }
+            .btn-primary, .btn-outline { width: 100%; max-width: 300px; justify-content: center; }
+
+            .blood-scene { width: 220px; height: 190px; }
+            .bs-drip-1 { left: 10px;  width: 14px; height: 110px; }
+            .bs-drip-2 { left: 40px;  width: 11px; height: 80px; }
+            .bs-drip-3 { left: 68px;  width: 17px; height: 135px; }
+            .bs-drip-4 { left: 96px;  width: 10px; height: 70px; }
+            .bs-drip-5 { left: 122px; width: 13px; height: 100px; }
+            .bs-drip-6 { left: 160px; width: 8px;  height: 60px; }
+            .bs-drop-1 { left: 2px;  width: 26px; height: 29px; }
+            .bs-drop-3 { left: 60px; width: 32px; height: 36px; }
+            .bs-drop-5 { left: 114px; width: 22px; height: 25px; }
+            .bs-drop-6 { left: 152px; }
+            .bs-pool { width: 200px; height: 45px; }
+
+            .price-section .inner,
+            .services-section .inner,
+            .modes-section .inner,
+            .why-section .inner,
+            .location-section .inner { padding: 0 16px; }
+
+            .price-section { padding: 60px 0; }
+            .price-new { font-size: 48px; }
+
+            .service-card { padding: 28px 20px; }
+            .service-number { font-size: 52px; }
+
+            .modes-grid { grid-template-columns: 1fr 1fr; gap: 2px; }
+            .mode-card { padding: 24px 16px; }
+
+            .why-grid { grid-template-columns: 1fr; gap: 36px; }
+            .why-card { max-width: 320px; margin: 0 auto; }
+
+            .location-card { padding: 32px 20px; }
+
+            .modal { padding: 28px 18px; }
+            .form-row { grid-template-columns: 1fr; gap: 0; }
+            .modal-title { font-size: 20px; }
+
+            footer { padding: 48px 0 24px; }
+            .footer-inner { padding: 0 16px; }
+        }
+
+        /* Small mobile ~400px */
+        @media (max-width: 400px) {
+            .logo-text { display: none; }
+            .hero h1 { font-size: 34px; }
+            .modes-grid { grid-template-columns: 1fr; }
+            .section-title { font-size: 22px; }
+            .price-new { font-size: 42px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Language Bar -->
+<div class="lang-bar">
+    <div class="inner">
+        <button class="lang-btn active" onclick="setLang('az')" id="btn-az">AZ</button>
+        <button class="lang-btn" onclick="setLang('ru')" id="btn-ru">RU</button>
+    </div>
+</div>
+
+<!-- Header -->
+<header>
+    <div class="header-inner">
+        <a href="/" class="logo">
+            <img src="https://panikaqorxuevi.com/Ads%C4%B1z%20tasar%C4%B1m%20(12).png" alt="Panika Logo">
+            <div class="logo-text">PANIKA <span>QORXU</span> EVİ</div>
+        </a>
+        <nav>
+            <a href="/" class="active" data-az="Ana Səhifə" data-ru="Главная">Ana Səhifə</a>
+            <a href="/games" data-az="Oyunlar" data-ru="Игры">Oyunlar</a>
+            <a href="/cinema" data-az="Cinema" data-ru="Кинотеатр">Cinema</a>
+            <button class="btn-primary nav-cta" onclick="openModal()" data-az="Rezerv Et" data-ru="Забронировать">Rezerv Et</button>
+        </nav>
+        <div class="hamburger" onclick="toggleMobile()">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+    <div class="mobile-nav" id="mobileNav">
+        <a href="/" data-az="Ana Səhifə" data-ru="Главная">Ana Səhifə</a>
+        <a href="/games" data-az="Oyunlar" data-ru="Игры">Oyunlar</a>
+        <a href="/cinema" data-az="Cinema" data-ru="Кинотеатр">Cinema</a>
+    </div>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+    <div class="hero-bg"></div>
+    <div class="drip" style="left:10%; animation-duration:8s; animation-delay:0s;"></div>
+    <div class="drip" style="left:30%; animation-duration:12s; animation-delay:3s;"></div>
+    <div class="drip" style="left:65%; animation-duration:9s; animation-delay:1.5s;"></div>
+    <div class="drip" style="left:85%; animation-duration:11s; animation-delay:5s;"></div>
+    <!-- blood splatters -->
+    <div class="splat" style="width:180px;height:120px;top:12%;left:5%;transform:rotate(-15deg);"></div>
+    <div class="splat" style="width:100px;height:80px;top:70%;right:8%;transform:rotate(30deg);"></div>
+    <div class="splat" style="width:60px;height:50px;top:40%;left:48%;transform:rotate(10deg);opacity:0.1;"></div>
+    <div class="hero-content">
+        <div>
+            <div class="hero-badge" data-az="Bakının №1 Qorxu Evi" data-ru="Дом страха №1 в Баку">Bakının №1 Qorxu Evi</div>
+            <h1>
+                <div class="red" id="hero-title-1">QORXU</div>
+                <div id="hero-title-2">EVİ</div>
+            </h1>
+            <p class="hero-sub" id="hero-desc">
+                Bakının ən qorxulu məkanında<br><em>unutulmaz</em> təcrübə yaşa.
+            </p>
+            <div class="hero-actions">
+                <button class="btn-primary" onclick="openModal()" id="hero-cta1">
+                    <svg fill="currentColor" viewBox="0 0 24 24" width="16" height="16"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/></svg>
+                    Rezerv Et
+                </button>
+                <a href="/games" class="btn-outline" id="hero-cta2">Oyunları Gör →</a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="blood-scene">
+                <!-- sparks -->
+                <div class="bs-spark bs-spark-1"></div>
+                <div class="bs-spark bs-spark-2"></div>
+                <div class="bs-spark bs-spark-3"></div>
+                <div class="bs-spark bs-spark-4"></div>
+                <div class="bs-spark bs-spark-5"></div>
+                <!-- drip columns -->
+                <div class="bs-drip bs-drip-1"></div>
+                <div class="bs-drip bs-drip-2"></div>
+                <div class="bs-drip bs-drip-3"></div>
+                <div class="bs-drip bs-drip-4"></div>
+                <div class="bs-drip bs-drip-5"></div>
+                <div class="bs-drip bs-drip-6"></div>
+                <!-- round drops -->
+                <div class="bs-drop bs-drop-1"></div>
+                <div class="bs-drop bs-drop-2"></div>
+                <div class="bs-drop bs-drop-3"></div>
+                <div class="bs-drop bs-drop-4"></div>
+                <div class="bs-drop bs-drop-5"></div>
+                <div class="bs-drop bs-drop-6"></div>
+                <!-- glow pool -->
+                <div class="bs-pool"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Blood Drip Divider -->
+<div class="blood-drip-bar" style="background:#050505; margin-top:-2px;">
+  <svg viewBox="0 0 1440 80" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="height:80px;">
+    <defs>
+      <linearGradient id="bloodGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#cc1a0a" stop-opacity="1"/>
+        <stop offset="100%" stop-color="#7b1a12" stop-opacity="0.7"/>
+      </linearGradient>
+    </defs>
+    <!-- base band -->
+    <rect width="1440" height="12" fill="url(#bloodGrad)"/>
+    <!-- drip drops -->
+    <path class="drip-path" d="M60 12 Q65 50 60 70 Q55 80 60 80 Q65 80 65 70 Q65 50 70 12 Z" fill="url(#bloodGrad)"/>
+    <path class="drip-path" d="M160 12 Q165 40 160 58 Q156 66 160 66 Q164 66 163 58 Q162 40 168 12 Z" fill="url(#bloodGrad)"/>
+    <path class="drip-path" d="M310 12 Q316 55 311 72 Q307 82 312 82 Q317 82 316 72 Q315 55 322 12 Z" fill="url(#bloodGrad)"/>
+    <path class="drip-path" d="M490 12 Q494 44 490 60 Q487 68 491 68 Q495 68 494 60 Q493 44 498 12 Z" fill="url(#bloodGrad)"/>
+    <path class="drip-path" d="M680 12 Q686 62 681 76 Q677 84 682 84 Q687 84 686 76 Q685 62 692 12 Z" fill="url(#bloodGrad)"/>
+    <path class="drip-path" d="M850 12 Q855 42 851 57 Q848 64 852 64 Q856 64 855 57 Q854 42 860 12 Z" fill="url(#bloodGrad)"/>
+    <path class="drip-path" d="M1050 12 Q1056 52 1051 68 Q1047 77 1052 77 Q1057 77 1056 68 Q1055 52 1062 12 Z" fill="url(#bloodGrad)"/>
+    <path class="drip-path" d="M1260 12 Q1265 46 1261 63 Q1258 71 1262 71 Q1266 71 1265 63 Q1264 46 1270 12 Z" fill="url(#bloodGrad)"/>
+    <path class="drip-path" d="M1400 12 Q1405 38 1401 52 Q1398 59 1402 59 Q1406 59 1405 52 Q1404 38 1410 12 Z" fill="url(#bloodGrad)"/>
+  </svg>
+</div>
+
+<!-- Price Section -->
+<section class="price-section">
+    <div class="inner">
+        <div class="section-label" id="price-label">Bu ay xüsusi endirim</div>
+        <div class="section-title" id="price-title">Buradan Rezerv Et — Endirim Qazan</div>
+        <div class="price-grid">
+            <div class="price-card">
+                <div class="price-day" id="weekday-label">Həftə içi · <span>Bazar ertəsi — Cümə</span></div>
+                <div class="price-old">15 AZN</div>
+                <div class="price-new">12 <sup>AZN</sup></div>
+                <div class="price-save" id="save-label">3 AZN endirim</div>
+            </div>
+            <div class="price-card">
+                <div class="price-day" id="weekend-label">Həftə sonu · <span>Şənbə — Bazar</span></div>
+                <div class="price-old">18 AZN</div>
+                <div class="price-new">15 <sup>AZN</sup></div>
+                <div class="price-save" id="save-label2">3 AZN endirim</div>
+            </div>
+        </div>
+        <div class="hours-bar">
+            <svg class="hours-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+            <span class="hours-label" id="hours-label">İş saatları</span>
+            <span class="hours-value">13:00 — 02:00</span>
+        </div>
+    </div>
+</section>
+
+<!-- Services -->
+<section class="services-section">
+    <div class="inner">
+        <div class="section-label" id="services-label">Xidmətlər</div>
+        <div class="section-title" id="services-title">Nə təklif edirik?</div>
+        <div class="services-grid">
+            <!-- Oyunlar -->
+            <div class="service-card">
+                <div class="service-number">01</div>
+                <div class="service-icon-wrap">
+                    <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10 9 11 5.16-1 9-5.45 9-11V5l-9-4z"/></svg>
+                </div>
+                <div class="service-title" id="s1-title">Oyunlarımız</div>
+                <div class="service-sub" id="s1-sub">Qaranlıq və qorxulu oyun məkanları</div>
+                <ul class="service-features" id="s1-features">
+                    <li>Qorxu Oyunları</li>
+                    <li>Qaranlıq Labirintlər</li>
+                    <li>Qorxulu Aktyorlar</li>
+                </ul>
+                <div class="service-footer">
+                    <a href="/games" class="service-link" id="s1-link">Ətraflı →</a>
+                    <button class="btn-primary" onclick="openModal('Oyunlar')" id="s1-btn">Rezerv Et</button>
+                </div>
+            </div>
+            <!-- Cinema -->
+            <div class="service-card">
+                <div class="service-number">02</div>
+                <div class="service-icon-wrap">
+                    <svg fill="currentColor" viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>
+                </div>
+                <div class="service-title">CINEMA</div>
+                <div class="service-sub" id="s2-sub">Qorxu filmlərinin məkanı</div>
+                <ul class="service-features" id="s2-features">
+                    <li>4D Qorxu Filmləri</li>
+                    <li>İnteraktiv Kino Təcrübəsi</li>
+                    <li>Dəhşətli Atmosfer</li>
+                    <li>Surround Səs Sistemi</li>
+                </ul>
+                <div class="service-footer">
+                    <a href="/cinema" class="service-link" id="s2-link">Ətraflı →</a>
+                    <button class="btn-primary" onclick="openModal('Cinema')" id="s2-btn">Rezerv Et</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Game Modes -->
+<section class="modes-section">
+    <div class="inner">
+        <div class="section-label" id="modes-label">Oyun rejimləri</div>
+        <div class="section-title" id="modes-title">Öz Səviyyəni Seç</div>
+        <div class="modes-grid">
+            <div class="mode-card" style="--mode-color:#f1c40f">
+                <div class="mode-dot"></div>
+                <div class="mode-name">LIGHT</div>
+                <div class="mode-age" id="m1-age">Yaş: 8–12</div>
+                <div class="mode-desc" id="m1-desc">Qorxusuz, aktiyorsuz — yalnız məntiq tapşırıqları</div>
+            </div>
+            <div class="mode-card" style="--mode-color:#27ae60">
+                <div class="mode-dot"></div>
+                <div class="mode-name">STANDART</div>
+                <div class="mode-age" id="m2-age">Yaş: 12+</div>
+                <div class="mode-desc" id="m2-desc">Qorxulu, toxunuşsuz aktyorlu</div>
+            </div>
+            <div class="mode-card" style="--mode-color:#e67e22">
+                <div class="mode-dot"></div>
+                <div class="mode-name">HARD</div>
+                <div class="mode-age" id="m3-age">Yaş: 12+</div>
+                <div class="mode-desc" id="m3-desc">Daha qorxulu, yüngül toxunuşlar</div>
+            </div>
+            <div class="mode-card" style="--mode-color:#c0392b">
+                <div class="mode-dot"></div>
+                <div class="mode-name">ULTRA HARD</div>
+                <div class="mode-age" id="m4-age">Yaş: 14+</div>
+                <div class="mode-desc" id="m4-desc">Çox qorxulu, ağır fiziki toxunuşlar</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Us -->
+<section class="why-section">
+    <div class="inner">
+        <div class="section-label" id="why-label">Üstünlüklərimiz</div>
+        <div class="section-title" id="why-title">Niyə Qorxu Evi?</div>
+        <div class="why-grid">
+            <div class="why-card">
+                <div class="why-num">01</div>
+                <svg class="why-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A1.5 1.5 0 0018.54 8H16c-.8 0-1.54.37-2 1l-3 4v2h2l2.54-3.4L16.5 18H20z"/></svg>
+                <div class="why-title" id="w1-title">Peşəkar Komanda</div>
+                <div class="why-text" id="w1-text">Təcrübəli aktyorlar və texniki heyət sizi real qorxu təcrübəsinə aparır.</div>
+            </div>
+            <div class="why-card">
+                <div class="why-num">02</div>
+                <svg class="why-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10 9 11 5.16-1 9-5.45 9-11V5l-9-4z"/></svg>
+                <div class="why-title" id="w2-title">Tam Təhlükəsizlik</div>
+                <div class="why-text" id="w2-text">Kamera nəzarəti altında, tam təhlükəsiz mühitdə adrenalin yaşayın.</div>
+            </div>
+            <div class="why-card">
+                <div class="why-num">03</div>
+                <svg class="why-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05C17.1 14.13 19 15.28 19 16.5V19h5v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                <div class="why-title" id="w3-title">Dostlarla Əyləncə</div>
+                <div class="why-text" id="w3-text">Qrup halında oynayın, qorxun, gülün — yadda qalan xatirələr yaradın.</div>
+            </div>
+            <div class="why-card">
+                <div class="why-num">04</div>
+                <svg class="why-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v16l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+                <div class="why-title" id="w4-title">Tam Reallıq Hissi</div>
+                <div class="why-text" id="w4-text">Səs, işıq və dekorasiya — real qorxu dünyasına hazırsınızmı?</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Location -->
+<section class="location-section">
+    <div class="inner">
+        <div class="section-label" id="loc-label">Ünvan</div>
+        <div class="section-title" id="loc-title">Bizi Tapın</div>
+        <div class="location-card">
+            <div class="location-pin">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            </div>
+            <div class="location-text">
+                <div class="location-title" id="loc-card-title">Nərimanov, Bakı</div>
+                <div class="location-addr" id="loc-addr">Gülarə qədirbəyova 27 — Heydər Əliyev Mərkəzi, GrandMart'ın arxası</div>
+            </div>
+            <a href="https://www.google.com/maps/search/Qarabağ+küçəsi,+Bakı,+Azərbaycan/@40.3937,49.8626,17z" target="_blank" rel="noopener noreferrer">
+                <button class="btn-primary" id="map-btn">Google Maps →</button>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <div class="footer-inner">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="footer-logo">PANIKA <span>QORXU</span> EVİ</div>
+                <p class="footer-desc" id="footer-desc">Bakının ən qorxulu və həyəcanverici məkanı. Qorxulu macəralar və unutulmaz təcrübələr üçün bizə qoşulun.</p>
+            </div>
+            <div>
+                <div class="footer-heading" id="footer-services-head">Xidmətlər</div>
+                <ul class="footer-links" id="footer-services">
+                    <li>Qorxu Oyunları</li>
+                    <li>Qaranlıq Labirintlər</li>
+                    <li>Qorxulu Cinema</li>
+                    <li>Qrup Rezervasiyaları</li>
+                </ul>
+            </div>
+            <div>
+                <div class="footer-heading" id="footer-contact-head">Əlaqə</div>
+                <ul class="footer-contact">
+                    <li>
+                        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                        +994 51 633 53 21
+                    </li>
+                    <li>
+                        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/><path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                        13:00 — 02:00
+                    </li>
+                    <li>
+                        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+                        Bakı şəhəri
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span class="footer-copy" id="footer-copy">© 2025 Qorxu Evi — Bütün hüquqlar qorunur</span>
+            <span class="footer-copy" id="footer-phone">+994 51 633 53 21</span>
+        </div>
+    </div>
+</footer>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal()">×</button>
+        <div class="modal-title" id="modal-title">Rezervasiya Et</div>
+        <div class="modal-sub" id="modal-sub">WhatsApp vasitəsilə yer sifariş edin</div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label" id="label-fname">Ad</label>
+                <input type="text" id="firstName" class="form-input" placeholder="Adınız">
+            </div>
+            <div class="form-group">
+                <label class="form-label" id="label-lname">Soyad</label>
+                <input type="text" id="lastName" class="form-input" placeholder="Soyadınız">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" id="label-service">Xidmət</label>
+            <select id="service" class="form-select">
+                <option value="Qiyamət">Qiyamət</option>
+                <option value="Scream">Scream</option>
+                <option value="Bubble Ball">Bubble Ball</option>
+                <option value="Cinema">Cinema</option>
+            </select>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label" id="label-time">Vaxt</label>
+                <select id="timeSlot" class="form-select"></select>
+            </div>
+            <div class="form-group">
+                <label class="form-label" id="label-people">Nəfər sayı</label>
+                <input type="number" id="numberOfPeople" min="1" max="20" value="1" class="form-input">
+            </div>
+        </div>
+
+        <button class="btn-whatsapp" onclick="sendWhatsApp()">
+            <svg fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/></svg>
+            <span id="whatsapp-btn-text">WhatsApp ilə Rezerv Et</span>
+        </button>
+    </div>
+</div>
+
+<script>
+// ── TIME SLOTS ──
+const timeSlot = document.getElementById('timeSlot');
+for (let h = 13; h <= 26; h++) {
+    const opt = document.createElement('option');
+    const display = (h % 24).toString().padStart(2,'0') + ':00';
+    opt.value = display;
+    opt.textContent = display;
+    timeSlot.appendChild(opt);
+}
+
+// ── MOBILE MENU ──
+function toggleMobile() {
+    document.getElementById('mobileNav').classList.toggle('open');
+}
+
+// ── MODAL ──
+function openModal(service) {
+    if (service) document.getElementById('service').value = service;
+    document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal(e) {
+    if (!e || e.target === document.getElementById('modalOverlay')) {
+        document.getElementById('modalOverlay').classList.remove('open');
+    }
+}
+
+// ── WHATSAPP ──
+function sendWhatsApp() {
+    const fn = document.getElementById('firstName').value.trim();
+    const ln = document.getElementById('lastName').value.trim();
+    const sv = document.getElementById('service').value;
+    const ts = document.getElementById('timeSlot').value;
+    const np = document.getElementById('numberOfPeople').value;
+    const lang = document.documentElement.getAttribute('data-lang') || 'az';
+
+    if (!fn || !ln) {
+        alert(lang === 'ru' ? 'Пожалуйста, введите имя и фамилию!' : 'Zəhmət olmasa ad və soyadınızı daxil edin!');
+        return;
+    }
+
+    const msg = lang === 'ru'
+        ? `Здравствуйте! Хочу забронировать место в Доме Страха:\n\n👤 Имя: ${fn} ${ln}\n🎮 Услуга: ${sv}\n🕒 Время: ${ts}\n👥 Кол-во человек: ${np}\n\nСпасибо!`
+        : `Salam! Qorxu Evində rezervasiya etmək istəyirəm:\n\n👤 Ad Soyad: ${fn} ${ln}\n🎮 Xidmət: ${sv}\n🕒 Vaxt: ${ts}\n👥 Nəfər sayı: ${np}\n\nTəşəkkür edirəm!`;
+
+    window.open(`https://wa.me/994516335321?text=${encodeURIComponent(msg)}`, '_blank');
+    closeModal();
+}
+
+// ── LANGUAGE ──
+const translations = {
+    az: {
+        'hero-badge': 'Bakının №1 Qorxu Evi',
+        'hero-title-1': 'QORXU',
+        'hero-title-2': 'EVİ',
+        'hero-desc': 'Bakının ən qorxulu məkanında<br><em>unutulmaz</em> təcrübə yaşa.',
+        'hero-cta1': '▶ Rezerv Et',
+        'hero-cta2': 'Oyunları Gör →',
+        'price-label': 'Bu ay xüsusi endirim',
+        'price-title': 'Buradan Rezerv Et — Endirim Qazan',
+        'weekday-label': 'Həftə içi · <span>Bazar ertəsi — Cümə</span>',
+        'weekend-label': 'Həftə sonu · <span>Şənbə — Bazar</span>',
+        'save-label': '3 AZN endirim',
+        'save-label2': '3 AZN endirim',
+        'hours-label': 'İş saatları',
+        'services-label': 'Xidmətlər',
+        'services-title': 'Nə təklif edirik?',
+        's1-title': 'Oyunlarımız',
+        's1-sub': 'Qaranlıq və qorxulu oyun məkanları',
+        's1-link': 'Ətraflı →',
+        's1-btn': 'Rezerv Et',
+        's2-sub': 'Qorxu filmlərinin məkanı',
+        's2-link': 'Ətraflı →',
+        's2-btn': 'Rezerv Et',
+        's1-features': ['Qorxu Oyunları', 'Qaranlıq Labirintlər', 'Qorxulu Aktyorlar'],
+        's2-features': ['4D Qorxu Filmləri', 'İnteraktiv Kino Təcrübəsi', 'Dəhşətli Atmosfer', 'Surround Səs Sistemi'],
+        'modes-label': 'Oyun rejimləri',
+        'modes-title': 'Öz Səviyyəni Seç',
+        'm1-age': 'Yaş: 8–12',
+        'm1-desc': 'Qorxusuz, aktiyorsuz — yalnız məntiq tapşırıqları',
+        'm2-age': 'Yaş: 12+',
+        'm2-desc': 'Qorxulu, toxunuşsuz aktyorlu',
+        'm3-age': 'Yaş: 12+',
+        'm3-desc': 'Daha qorxulu, yüngül toxunuşlar',
+        'm4-age': 'Yaş: 14+',
+        'm4-desc': 'Çox qorxulu, ağır fiziki toxunuşlar',
+        'why-label': 'Üstünlüklərimiz',
+        'why-title': 'Niyə Qorxu Evi?',
+        'w1-title': 'Peşəkar Komanda',
+        'w1-text': 'Təcrübəli aktyorlar və texniki heyət sizi real qorxu təcrübəsinə aparır.',
+        'w2-title': 'Tam Təhlükəsizlik',
+        'w2-text': 'Kamera nəzarəti altında, tam təhlükəsiz mühitdə adrenalin yaşayın.',
+        'w3-title': 'Dostlarla Əyləncə',
+        'w3-text': 'Qrup halında oynayın, qorxun, gülün — yadda qalan xatirələr yaradın.',
+        'w4-title': 'Tam Reallıq Hissi',
+        'w4-text': 'Səs, işıq və dekorasiya — real qorxu dünyasına hazırsınızmı?',
+        'loc-label': 'Ünvan',
+        'loc-title': 'Bizi Tapın',
+        'loc-card-title': 'Nərimanov, Bakı',
+        'loc-addr': 'Gülarə qədirbəyova 27 — Heydər Əliyev Mərkəzi, GrandMart\'ın arxası',
+        'map-btn': 'Google Maps →',
+        'footer-desc': 'Bakının ən qorxulu və həyəcanverici məkanı. Qorxulu macəralar üçün bizə qoşulun.',
+        'footer-services-head': 'Xidmətlər',
+        'footer-contact-head': 'Əlaqə',
+        'footer-services': ['Qorxu Oyunları', 'Qaranlıq Labirintlər', 'Qorxulu Cinema', 'Qrup Rezervasiyaları'],
+        'footer-copy': '© 2025 Qorxu Evi — Bütün hüquqlar qorunur',
+        'modal-title': 'Rezervasiya Et',
+        'modal-sub': 'WhatsApp vasitəsilə yer sifariş edin',
+        'label-fname': 'Ad',
+        'label-lname': 'Soyad',
+        'label-service': 'Xidmət',
+        'label-time': 'Vaxt',
+        'label-people': 'Nəfər sayı',
+        'whatsapp-btn-text': 'WhatsApp ilə Rezerv Et',
+    },
+    ru: {
+        'hero-badge': 'Дом страха №1 в Баку',
+        'hero-title-1': 'ДОМ',
+        'hero-title-2': 'СТРАХА',
+        'hero-desc': 'Незабываемые впечатления<br>в самом <em>жутком</em> месте Баку.',
+        'hero-cta1': '▶ Забронировать',
+        'hero-cta2': 'Смотреть игры →',
+        'price-label': 'Специальная скидка этого месяца',
+        'price-title': 'Бронируй здесь — получай скидку',
+        'weekday-label': 'Будние дни · <span>Пн — Пт</span>',
+        'weekend-label': 'Выходные · <span>Сб — Вс</span>',
+        'save-label': 'Скидка 3 AZN',
+        'save-label2': 'Скидка 3 AZN',
+        'hours-label': 'Часы работы',
+        'services-label': 'Услуги',
+        'services-title': 'Что мы предлагаем?',
+        's1-title': 'Наши игры',
+        's1-sub': 'Тёмные и пугающие игровые зоны',
+        's1-link': 'Подробнее →',
+        's1-btn': 'Забронировать',
+        's2-sub': 'Пространство фильмов ужасов',
+        's2-link': 'Подробнее →',
+        's2-btn': 'Забронировать',
+        's1-features': ['Игры ужасов', 'Тёмные лабиринты', 'Пугающие актёры'],
+        's2-features': ['4D фильмы ужасов', 'Интерактивный кинотеатр', 'Жуткая атмосфера', 'Surround звук'],
+        'modes-label': 'Игровые режимы',
+        'modes-title': 'Выбери свой уровень',
+        'm1-age': 'Возраст: 8–12',
+        'm1-desc': 'Без страха и актёров — только логические задачи',
+        'm2-age': 'Возраст: 12+',
+        'm2-desc': 'Страшно, актёры без прикосновений',
+        'm3-age': 'Возраст: 12+',
+        'm3-desc': 'Ещё страшнее, лёгкие прикосновения',
+        'm4-age': 'Возраст: 14+',
+        'm4-desc': 'Очень страшно, сильные физические контакты',
+        'why-label': 'Наши преимущества',
+        'why-title': 'Почему Дом Страха?',
+        'w1-title': 'Профессиональная команда',
+        'w1-text': 'Опытные актёры и техническая команда погрузят вас в настоящий ужас.',
+        'w2-title': 'Полная безопасность',
+        'w2-text': 'Под камерами наблюдения, в полностью безопасной среде.',
+        'w3-title': 'Веселье с друзьями',
+        'w3-text': 'Играйте группой, пугайтесь, смейтесь — создавайте незабываемые воспоминания.',
+        'w4-title': 'Ощущение полной реальности',
+        'w4-text': 'Звук, свет и декорации — готовы ли вы к настоящему миру страха?',
+        'loc-label': 'Адрес',
+        'loc-title': 'Найдите нас',
+        'loc-card-title': 'Нариманов, Баку',
+        'loc-addr': 'ул. Гюларе Гадирбейова 27 — Центр Гейдара Алиева, за GrandMart',
+        'map-btn': 'Google Maps →',
+        'footer-desc': 'Самое страшное и захватывающее место Баку. Присоединяйтесь к нам для пугающих приключений.',
+        'footer-services-head': 'Услуги',
+        'footer-contact-head': 'Контакты',
+        'footer-services': ['Игры ужасов', 'Тёмные лабиринты', 'Кинотеатр ужасов', 'Групповые бронирования'],
+        'footer-copy': '© 2025 Qorxu Evi — Все права защищены',
+        'modal-title': 'Бронирование',
+        'modal-sub': 'Забронируйте место через WhatsApp',
+        'label-fname': 'Имя',
+        'label-lname': 'Фамилия',
+        'label-service': 'Услуга',
+        'label-time': 'Время',
+        'label-people': 'Кол-во человек',
+        'whatsapp-btn-text': 'Забронировать через WhatsApp',
+    }
+};
+
+function setLang(lang) {
+    document.documentElement.setAttribute('data-lang', lang);
+    document.getElementById('btn-az').classList.toggle('active', lang === 'az');
+    document.getElementById('btn-ru').classList.toggle('active', lang === 'ru');
+
+    const t = translations[lang];
+    for (const [id, val] of Object.entries(t)) {
+        const el = document.getElementById(id);
+        if (!el) continue;
+        if (Array.isArray(val)) {
+            el.innerHTML = val.map(v => `<li>${v}</li>`).join('');
+        } else {
+            el.innerHTML = val;
+        }
+    }
+
+    // Nav links
+    document.querySelectorAll('[data-az][data-ru]').forEach(el => {
+        el.textContent = el.getAttribute('data-' + lang);
+    });
+
+    // Logo title
+    document.querySelector('.logo-text').innerHTML = lang === 'ru'
+        ? 'PANIKA <span>ДОМ</span> СТРАХА'
+        : 'PANIKA <span>QORXU</span> EVİ';
+
+    // Footer logo
+    document.querySelector('.footer-logo').innerHTML = lang === 'ru'
+        ? 'PANIKA <span>ДОМ</span> СТРАХА'
+        : 'PANIKA <span>QORXU</span> EVİ';
+
+    // Placeholders
+    document.getElementById('firstName').placeholder = lang === 'ru' ? 'Имя' : 'Adınız';
+    document.getElementById('lastName').placeholder = lang === 'ru' ? 'Фамилия' : 'Soyadınız';
+}
+</script>
+</body>
+</html>
